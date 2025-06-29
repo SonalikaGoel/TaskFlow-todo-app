@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .avatar:hover {
+            transform: scale(1.1);
+        }
+
+        .user-details h2 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .user-details p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .sign-out-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .sign-out-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .task-input-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .task-input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            min-width: 300px;
+        }
+
+        .task-input:focus {
+            outline: none;
+            border-color: #0D8ABC;
+            box-shadow: 0 0 0 3px rgba(13, 138, 188, 0.1);
+        }
+
+        .add-btn {
+            background: linear-gradient(135deg, #0D8ABC, #1e3c72);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(13, 138, 188, 0.3);
+        }
+
+        .stages-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .stage {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .stage:hover {
+            transform: translateY(-3px);
+        }
+
+        .stage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f3f4;
+        }
+
+        .stage-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stage-counter {
+            background: #0D8ABC;
+            color: white;
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .todo-stage .stage-title {
+            color: #e67e22;
+        }
+
+        .todo-stage .stage-counter {
+            background: #e67e22;
+        }
+
+        .completed-stage .stage-title {
+            color: #27ae60;
+        }
+
+        .completed-stage .stage-counter {
+            background: #27ae60;
+        }
+
+        .archived-stage .stage-title {
+            color: #95a5a6;
+        }
+
+        .archived-stage .stage-counter {
+            background: #95a5a6;
+        }
+
+        .tasks-list {
+            min-height: 200px;
+        }
+
+        .task-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .task-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: #0D8ABC;
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .task-card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .task-card:hover {
+            border-color: #0D8ABC;
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(13, 138, 188, 0.1);
+        }
+
+        .task-content {
+            margin-bottom: 15px;
+        }
+
+        .task-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .task-timestamp {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .complete-btn {
+            background: #27ae60;
+            color: white;
+        }
+
+        .complete-btn:hover {
+            background: #219a52;
+            transform: translateY(-1px);
+        }
+
+        .archive-btn {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .archive-btn:hover {
+            background: #7f8c8d;
+            transform: translateY(-1px);
+        }
+
+        .move-todo-btn {
+            background: #e67e22;
+            color: white;
+        }
+
+        .move-todo-btn:hover {
+            background: #d35400;
+            transform: translateY(-1px);
+        }
+
+        .move-completed-btn {
+            background: #27ae60;
+            color: white;
+        }
+
+        .move-completed-btn:hover {
+            background: #219a52;
+            transform: translateY(-1px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #7f8c8d;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .empty-state-text {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .empty-state-subtext {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .loading-indicator {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0D8ABC;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #27ae60;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: #e74c3c;
+        }
+
+        .notification.info {
+            background: #3498db;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                text-align: center;
+            }
+            
+            .user-info {
+                order: -1;
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .stages-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .task-input {
+                min-width: unset;
+                width: 100%;
+            }
+            
+            .task-actions {
+                justify-content: center;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">TaskFlow</h1>
+            <div class="user-info">
+                <img id="userAvatar" class="avatar" alt="User Avatar">
+                <div class="user-details">
+                    <h2 id="userName">Loading...</h2>
+                    <p>Personal Productivity Dashboard</p>
+                </div>
+            </div>
+            <button class="sign-out-btn" onclick="signOut()">Sign Out</button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <section class="task-input-section fade-in">
+            <div class="input-group">
+                <input type="text" class="task-input" id="taskInput" placeholder="What needs to be done?" maxlength="200">
+                <button class="add-btn" onclick="addTask()">Add Task</button>
+            </div>
+        </section>
+
+        <div class="loading-indicator" id="loadingIndicator">
+            <div class="loading-spinner"></div>
+            <p>Loading your tasks...</p>
+        </div>
+
+        <section class="stages-container" id="stagesContainer" style="display: none;">
+            <!-- Todo Stage -->
+            <div class="stage todo-stage fade-in">
+                <div class="stage-header">
+                    <h3 class="stage-title">
+                        📋 Todo
+                        <span class="stage-counter" id="todoCounter">0</span>
+                    </h3>
+                </div>
+                <div class="tasks-list" id="todoTasks">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📝</div>
+                        <div class="empty-state-text">No active tasks</div>
+                        <div class="empty-state-subtext">Add a task to get started!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Completed Stage -->
+            <div class="stage completed-stage fade-in">
+                <div class="stage-header">
+                    <h3 class="stage-title">
+                        ✅ Completed
+                        <span class="stage-counter" id="completedCounter">0</span>
+                    </h3>
+                </div>
+                <div class="tasks-list" id="completedTasks">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🎉</div>
+                        <div class="empty-state-text">No completed tasks</div>
+                        <div class="empty-state-subtext">Complete a task to see it here!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Archived Stage -->
+            <div class="stage archived-stage fade-in">
+                <div class="stage-header">
+                    <h3 class="stage-title">
+                        📦 Archived
+                        <span class="stage-counter" id="archivedCounter">0</span>
+                    </h3>
+                </div>
+                <div class="tasks-list" id="archivedTasks">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📚</div>
+                        <div class="empty-state-text">No archived tasks</div>
+                        <div class="empty-state-subtext">Archive tasks to keep them for reference!</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // Global variables
+        let tasks = {
+            todo: [],
+            completed: [],
+            archived: []
+        };
+
+        let currentUser = null;
+
+        // Initialize app on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        // Initialize the application
+        async function initializeApp() {
+            // Check if user is logged in
+            const userData = localStorage.getItem('taskflowUser');
+            if (!userData) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            currentUser = JSON.parse(userData);
+            
+            // Set up user interface
+            setupUserInterface();
+            
+            // Load tasks from localStorage or fetch initial data
+            await loadTasks();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Hide loading and show content
+            document.getElementById('loadingIndicator').style.display = 'none';
+            document.getElementById('stagesContainer').style.display = 'grid';
+        }
+
+        // Set up user interface elements
+        function setupUserInterface() {
+            const userName = document.getElementById('userName');
+            const userAvatar = document.getElementById('userAvatar');
+            
+            userName.textContent = `Welcome, ${currentUser.name}!`;
+            userAvatar.src = `https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=${encodeURIComponent(currentUser.name)}`;
+            userAvatar.alt = `${currentUser.name}'s Avatar`;
+        }
+
+        // Load tasks from localStorage or fetch initial data
+        async function loadTasks() {
+            const storedTasks = localStorage.getItem('taskflowTasks');
+            
+            if (storedTasks) {
+                tasks = JSON.parse(storedTasks);
+                renderAllTasks();
+            } else {
+                // First time user - fetch dummy data
+                await fetchInitialTasks();
+            }
+        }
+
+        // Fetch initial tasks from DummyJSON API
+        async function fetchInitialTasks() {
+            try {
+                const response = await fetch('https://dummyjson.com/todos');
+                const data = await response.json();
+                
+                // Transform API data to our task structure
+                tasks.todo = data.todos.slice(0, 10).map((todo, index) => ({
+                    id: Date.now() + index,
+                    title: todo.todo,
+                    timestamp: new Date().toLocaleString('en-US', {
+                        month: '2-digit',
+                        day: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: true
+                    }),
+                    createdAt: new Date().toISOString(),
+                    stage: 'todo'
+                }));
+                
+                saveTasks();
+                renderAllTasks();
+                showNotification('Welcome! Your initial tasks have been loaded.');
+            } catch (error) {
+                console.error('Error fetching initial tasks:', error);
+                showNotification('Welcome to TaskFlow! Start by adding your first task.', 'info');
+            }
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            const taskInput = document.getElementById('taskInput');
+            
+            // Enter key to add task
+            taskInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addTask();
+                }
+            });
+        }
+
+        // Add new task
+        function addTask() {
+            const taskInput = document.getElementById('taskInput');
+            const taskTitle = taskInput.value.trim();
+            
+            if (!taskTitle) {
+                showNotification('Please enter a task title.', 'error');
+                taskInput.focus();
+                return;
+            }
+            
+            const newTask = {
+                id: Date.now(),
+                title: taskTitle,
+                timestamp: new Date().toLocaleString('en-US', {
+                    month: '2-digit',
+                    day: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: true
+                }),
+                createdAt: new Date().toISOString(),
+                stage: 'todo'
+            };
+            
+            tasks.todo.unshift(newTask);
+            taskInput.value = '';
+            
+            saveTasks();
+            renderAllTasks();
+            showNotification('Task added successfully!');
+            
+            // Focus back to input for continuous adding
+            taskInput.focus();
+        }
+
+        // Move task between stages
+        function moveTask(taskId, fromStage, toStage) {
+            const taskIndex = tasks[fromStage].findIndex(task => task.id === taskId);
+            if (taskIndex === -1) return;
+            
+            const task = tasks[fromStage][taskIndex];
+            task.stage = toStage;
+            task.timestamp = new Date().toLocaleString('en-US', {
+                month: '2-digit',
+                day: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+            
+            // Remove from current stage and add to new stage
+            tasks[fromStage].splice(taskIndex, 1);
+            tasks[toStage].unshift(task);
+            
+            saveTasks();
+            renderAllTasks();
+            
+            const stageNames = {
+                todo: 'Todo',
+                completed: 'Completed',
+                archived: 'Archived'
+            };
+            
+            showNotification(`Task moved to ${stageNames[toStage]}!`);
+        }
+
+        // Render all tasks in their respective stages
+        function renderAllTasks() {
+            renderTasks('todo');
+            renderTasks('completed');
+            renderTasks('archived');
+            updateCounters();
+        }
+
+        // Render tasks for a specific stage
+        function renderTasks(stage) {
+            const container = document.getElementById(`${stage}Tasks`);
+            const stageTasks = tasks[stage];
+            
+            if (stageTasks.length === 0) {
+                container.innerHTML = getEmptyStateHTML(stage);
+                return;
+            }
+            
+            container.innerHTML = stageTasks.map(task => createTaskHTML(task, stage)).join('');
+        }
+
+        // Create HTML for a single task
+        function createTaskHTML(task, stage) {
+            const actions = getTaskActions(task.id, stage);
+            
+            return `
+                <div class="task-card">
+                    <div class="task-content">
+                        <div class="task-title">${escapeHtml(task.title)}</div>
+                        <div class="task-timestamp">
+                            🕒 Last updated: ${task.timestamp}
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        ${actions}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Get action buttons based on task stage
+        function getTaskActions(taskId, stage) {
+            switch (stage) {
+                case 'todo':
+                    return `
+                        <button class="action-btn complete-btn" onclick="moveTask(${taskId}, 'todo', 'completed')">
+                            Mark as Completed
+                        </button>
+                        <button class="action-btn archive-btn" onclick="moveTask(${taskId}, 'todo', 'archived')">
+                            Archive
+                        </button>
+                    `;
+                case 'completed':
+                    return `
+                        <button class="action-btn move-todo-btn" onclick="moveTask(${taskId}, 'completed', 'todo')">
+                            Move to Todo
+                        </button>
+                        <button class="action-btn archive-btn" onclick="moveTask(${taskId}, 'completed', 'archived')">
+                            Archive
+                        </button>
+                    `;
+                case 'archived':
+                    return `
+                        <button class="action-btn move-todo-btn" onclick="moveTask(${taskId}, 'archived', 'todo')">
+                            Move to Todo
+                        </button>
+                        <button class="action-btn move-completed-btn" onclick="moveTask(${taskId}, 'archived', 'completed')">
+                            Move to Completed
+                        </button>
+                    `;
+                default:
+                    return '';
+            }
+        }
+
+        // Get empty state HTML for each stage
+        function getEmptyStateHTML(stage) {
+            const emptyStates = {
+                todo: {
+                    icon: '📝',
+                    text: 'No active tasks',
+                    subtext: 'Add a task to get started!'
+                },
+                completed: {
+                    icon: '🎉',
+                    text: 'No completed tasks',
+                    subtext: 'Complete a task to see it here!'
+                },
+                archived: {
+                    icon: '📚',
+                    text: 'No archived tasks',
+                    subtext: 'Archive tasks to keep them for reference!'
+                }
+            };
+            
+            const state = emptyStates[stage];
+            return `
+                <div class="empty-state">
+                    <div class="empty-state-icon">${state.icon}</div>
+                    <div class="empty-state-text">${state.text}</div>
+                    <div class="empty-state-subtext">${state.subtext}</div>
+                </div>
+            `;
+        }
+
+        // Update task counters
+        function updateCounters() {
+            document.getElementById('todoCounter').textContent = tasks.todo.length;
+            document.getElementById('completedCounter').textContent = tasks.completed.length;
+            document.getElementById('archivedCounter').textContent = tasks.archived.length;
+        }
+
+        // Save tasks to localStorage
+        function saveTasks() {
+            localStorage.setItem('taskflowTasks', JSON.stringify(tasks));
+        }
+
+        // Show notification
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Sign out function
+        function signOut() {
+            if (confirm('Are you sure you want to sign out? Your tasks will be saved.')) {
+                localStorage.removeItem('taskflowUser');
+                showNotification('Signed out successfully!');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            }
+        }
+
+        // Utility function to escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Add some keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + Enter to add task
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                addTask();
+            }
+            
+            // Escape to clear input
+            if (e.key === 'Escape') {
+                document.getElementById('taskInput').value = '';
+                document.getElementById('taskInput').blur();
+            }
+        });
+
+        // Add smooth scrolling for better UX
+        function smoothScrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Auto-focus on task input when page loads
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.getElementById('taskInput').focus();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow - Personal Productivity Companion</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #0D8ABC;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #0D8ABC;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(13, 138, 188, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #0D8ABC, #1e3c72);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(13, 138, 188, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            padding: 10px;
+            background: #ffe6e6;
+            border-radius: 8px;
+            border-left: 4px solid #e74c3c;
+            display: none;
+        }
+
+        .loading {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .loading-spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #0D8ABC;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .features-list {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .feature-icon {
+            width: 20px;
+            height: 20px;
+            background: #0D8ABC;
+            border-radius: 50%;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 30px 20px;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container fade-in">
+        <h1 class="logo">TaskFlow</h1>
+        <p class="subtitle">Your Personal Productivity Companion</p>
+        
+        <form id="registrationForm">
+            <div class="form-group">
+                <label for="userName">Full Name</label>
+                <input type="text" id="userName" name="userName" required placeholder="Enter your full name">
+            </div>
+            
+            <div class="form-group">
+                <label for="dateOfBirth">Date of Birth</label>
+                <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+            </div>
+            
+            <button type="submit" class="submit-btn">Get Started</button>
+            
+            <div class="error-message" id="errorMessage"></div>
+            
+            <div class="loading" id="loading">
+                <div class="loading-spinner"></div>
+                <p style="margin-top: 10px; color: #666;">Setting up your workspace...</p>
+            </div>
+        </form>
+
+        <div class="features-list">
+            <div class="feature-item">
+                <div class="feature-icon">✓</div>
+                <span>Organize tasks across Todo, Completed, and Archived stages</span>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">✓</div>
+                <span>Track task progress with timestamps</span>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">✓</div>
+                <span>Persistent data storage across sessions</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden div for locale support -->
+    <div id="locale-placeholder" data-locale="guj" style="display: none;"></div>
+
+    <script>
+        // Check if user is already registered on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const userData = localStorage.getItem('taskflowUser');
+            if (userData) {
+                try {
+                    const user = JSON.parse(userData);
+                    if (user.name && user.dateOfBirth && isValidAge(user.dateOfBirth)) {
+                        window.location.href = 'app.html';
+                        return;
+                    }
+                } catch (e) {
+                    // Clear invalid data
+                    localStorage.removeItem('taskflowUser');
+                }
+            }
+        });
+
+        // Form submission handler
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('userName').value.trim();
+            const dateOfBirth = document.getElementById('dateOfBirth').value;
+            const errorMessage = document.getElementById('errorMessage');
+            const loading = document.getElementById('loading');
+            
+            // Clear previous errors
+            errorMessage.style.display = 'none';
+            
+            // Validate inputs
+            if (!name) {
+                showError('Please enter your full name.');
+                return;
+            }
+            
+            if (!dateOfBirth) {
+                showError('Please select your date of birth.');
+                return;
+            }
+            
+            // Validate age
+            if (!isValidAge(dateOfBirth)) {
+                showError('Sorry, you must be over 10 years old to use TaskFlow.');
+                return;
+            }
+            
+            // Show loading
+            loading.style.display = 'block';
+            
+            // Simulate processing time
+            setTimeout(() => {
+                // Store user data
+                const userData = {
+                    name: name,
+                    dateOfBirth: dateOfBirth,
+                    registrationDate: new Date().toISOString()
+                };
+                
+                localStorage.setItem('taskflowUser', JSON.stringify(userData));
+                
+                // Redirect to app
+                window.location.href = 'app.html';
+            }, 1500);
+        });
+        
+        function isValidAge(dateOfBirth) {
+            const today = new Date();
+            const birthDate = new Date(dateOfBirth);
+            const age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                return (age - 1) > 10;
+            }
+            
+            return age > 10;
+        }
+        
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            
+            // Add shake animation
+            errorMessage.style.animation = 'shake 0.5s ease-in-out';
+            setTimeout(() => {
+                errorMessage.style.animation = '';
+            }, 500);
+        }
+        
+        // Add shake animation for errors
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                75% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
